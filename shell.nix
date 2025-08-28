@@ -1,4 +1,6 @@
-{ pkgs ? import <nixpkgs> { } }:
+{
+  pkgs ? import <nixpkgs> { },
+}:
 
 with pkgs;
 let
@@ -19,7 +21,12 @@ let
   };
 in
 mkShell {
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [
+    cargo
+    rustfmt
+    rustPackages.clippy
+    pkg-config
+  ];
   buildInputs = [
     openssl.dev
     clang
@@ -29,6 +36,6 @@ mkShell {
     grcov
     cargo-limit
     cargo-watch
-  ] ++
-  pkgs.lib.optional pkgs.stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
+  ]
+  ++ pkgs.lib.optional pkgs.stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
 }
