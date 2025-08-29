@@ -68,7 +68,7 @@ pub(crate) fn encrypt(
     let mut writer =
         encryptor.wrap_output(ArmoredWriter::wrap_output(&mut encrypted, AsciiArmor)?)?;
     io::copy(cleartext, &mut writer)?;
-    writer.finish()?;
+    writer.finish().and_then(|armor| armor.finish())?;
     Ok(encrypted)
 }
 
