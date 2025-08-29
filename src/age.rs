@@ -54,6 +54,7 @@ fn load_identities(identities: &[impl AsRef<Path>]) -> Result<Vec<Box<dyn Identi
 pub(crate) fn encrypt(
     public_keys: &[impl AsRef<str> + std::fmt::Debug],
     cleartext: &mut impl Read,
+    armored: bool,
 ) -> Result<Vec<u8>> {
     let recipients = load_public_keys(public_keys)?;
 
@@ -64,11 +65,16 @@ pub(crate) fn encrypt(
         )
     })?;
     let mut encrypted = vec![];
-
-    let mut writer =
-        encryptor.wrap_output(ArmoredWriter::wrap_output(&mut encrypted, AsciiArmor)?)?;
-    io::copy(cleartext, &mut writer)?;
-    writer.finish().and_then(|armor| armor.finish())?;
+    if armored {
+        let mut writer =
+            encryptor.wrap_output(ArmoredWriter::wrap_output(&mut encrypted, AsciiArmor)?)?;
+        io::copy(cleartext, &mut writer)?;
+        writer.finish().and_then(|armor| armor.finish())?;
+    } else {
+        let mut writer = encryptor.wrap_output(&mut encrypted)?;
+        io::copy(cleartext, &mut writer)?;
+        writer.finish()?;
+    };
     Ok(encrypted)
 }
 

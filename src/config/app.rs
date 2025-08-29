@@ -20,6 +20,8 @@ pub struct RecipientEntry {
 #[derive(Serialize, Deserialize)]
 pub struct AppConfig {
     config: HashMap<PathBuf, Vec<String>>,
+    #[serde(default)]
+    pub armor: bool,
     #[serde(skip)]
     path: PathBuf,
     #[serde(skip)]
@@ -39,6 +41,7 @@ impl AppConfig {
             }
             Err(err) if err.kind() == io::ErrorKind::NotFound => Ok(Self {
                 config: HashMap::new(),
+                armor: false,
                 path: path.into(),
                 prefix: repo_prefix.into(),
             }),
