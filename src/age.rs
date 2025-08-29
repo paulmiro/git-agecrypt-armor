@@ -4,7 +4,7 @@ use std::{
 };
 
 use age::{
-    armor::ArmoredReader,
+    armor::{ArmoredReader, ArmoredWriter, Format::AsciiArmor},
     cli_common::{read_identities, StdinGuard, UiCallbacks},
     plugin::{self, RecipientPluginV1},
     DecryptError, Decryptor, Encryptor, Identity, Recipient,
@@ -65,7 +65,8 @@ pub(crate) fn encrypt(
     })?;
     let mut encrypted = vec![];
 
-    let mut writer = encryptor.wrap_output(&mut encrypted)?;
+    let mut writer =
+        encryptor.wrap_output(ArmoredWriter::wrap_output(&mut encrypted, AsciiArmor)?)?;
     io::copy(cleartext, &mut writer)?;
     writer.finish()?;
     Ok(encrypted)
