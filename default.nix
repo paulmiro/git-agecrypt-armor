@@ -1,4 +1,13 @@
-{ lib, rustPlatform, pkg-config, libgit2, zlib, git, stdenv, darwin }:
+{
+  lib,
+  rustPlatform,
+  pkg-config,
+  libgit2,
+  zlib,
+  git,
+  stdenv,
+  darwin,
+}:
 
 let
   cargo_toml = lib.importTOML ./Cargo.toml;
@@ -13,8 +22,14 @@ rustPlatform.buildRustPackage rec {
     lockFile = ./Cargo.lock;
   };
 
-  nativeBuildInputs = [ pkg-config git ];
+  nativeBuildInputs = [
+    pkg-config
+    git
+  ];
 
-  buildInputs = [ libgit2 zlib ] ++
-      lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
+  buildInputs = [
+    libgit2
+    zlib
+  ]
+  ++ lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
 }
